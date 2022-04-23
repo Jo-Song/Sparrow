@@ -1,4 +1,4 @@
-name:ci
+name: ci
 
 on: [push, pull_request]
 
@@ -13,18 +13,19 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.1.5
         with:
-          node-version: "12"
-      
-      - name: Catch node modules
+          node-version: '12'
+
+      - name: Cache node modules
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
         with:
           path: ./node_modules
-          key: ${{runner.os}}-build-cache-node-modules-${{hashFiles('**/package.json')}}
+          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('**/package.json') }}
           restore-keys: |
             cache-node-modules-
-        - name: Run ci
-          run: |
-            npm install
-            npm run ci
+
+      - name: Run ci
+        run: |
+          npm install
+          npm run ci
