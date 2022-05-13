@@ -1,4 +1,5 @@
-import { line as pathLine } from './d';
+import { line as pathLine, area as pathArea } from './d';
+import { contour } from './primitive';
 
 // 绘制不同坐标系下面的圆
 // 绘制圆的函数和渲染器里面绘制圆的区别在于这里需要考虑坐标系
@@ -42,4 +43,25 @@ export function line(renderer, coordinate, {
   const points = I.map((i) => coordinate([X[i], Y[i]]));
   const d = pathLine(points);
   return renderer.path({ d, ...styles });
+}
+
+export function area(renderer, coordinate, {
+  X1, Y1, X2, Y2, I: I0, ...styles
+}) {
+  // 首尾连接
+  const I = coordinate.isPolar() ? [...I0, I0[0]] : I0;
+
+  // 将点按照顺时针方向排列
+  const points = [
+    ...I.map((i) => [X1[i], Y1[i]]),
+    ...I.map((i) => [X2[i], Y2[i]]).reverse(),
+  ].map(coordinate);
+
+  // 如果是在极坐标系下， 绘制等高线
+  if (coordinate.isPolar()) {
+    return contour(renderer, { points, ...styles });
+  }
+
+  // 否则直接绘制区域
+  return renderer.path({ d: pathArea(points), ...styles });
 }
